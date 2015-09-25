@@ -1,0 +1,96 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd ">
+        <!--1、dispatcher已经在web.xml里面配置-->
+
+        <!--2、处理器映射器HandlerMapping-->
+        <!-- 根据bean的name进行查找Handler 将action的url配置在bean的name中 -->
+        <!--
+        2.1 BeanNameUrlHandlerMapping：表示将定义的Bean名字作为请求的url，
+        需要将编写的controller在spring容器中进行配置，且指定bean的name为请求的url。
+        (根据请求url（XXXX.action）匹配spring容器bean的 name找到对应的bean（程序编写的Handler）)
+        -->
+        <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+        <!--
+        2.2 SimpleUrlHanlderMappring是BeanNameUrlHanlderMappring是增强版本，集中配置Bean的id对应的Url
+        -->
+        <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" >
+            <property name="mappings">
+                <props>
+                    <prop key="/simpleItems1" >simpleController1</prop>
+                    <prop key="/simpleItems2" >simpleController2</prop>
+                </props>
+            </property>
+        </bean>
+        <!--
+         2.3使用注解RequestMappingInfoHandlerMapping映射器
+         注解映射器配对使用，主要解析Handler方法中的形参
+         单个：
+         <bean class="com.ycy.controller.ItemController3"/>
+        -->
+        <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        </bean>
+
+        <context:component-scan base-package="com.ycy.controller"/>
+
+
+        <!--3、处理器适配器HandlerAdapter-->
+        <!--
+        3.1 SimpleControllerHandlerAdapter：即简单控制器处理适配器，
+        所有实现了org.springframework.web.servlet.mvc.Controller 接口的Bean作为
+        Springmvc的后端控制器。
+        -->
+        <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter">
+        </bean>
+        <!--
+        3.2 HttpRequestHandlerAdapter：即简单控制器处理适配器，
+        所有实现了org.springframework.web.servlet.mvc.HttpRequestHandler 接口的Bean作为
+        Springmvc的后端控制器。
+        -->
+        <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter">
+        </bean>
+        <!--
+        3.3 RequestMappingHandlerAdapter：注解适配器，与RequestMappingInfoHandlerMapping配对使用
+        -->
+        <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
+
+
+
+
+
+        <!--4、视图解析器ViewResolver-->
+        <!--
+            InternalResourceViewResolver：支持JSP视图解析
+        viewClass：JstlView表示JSP模板页面需要使用JSTL标签库，所以classpath中必须包含jstl的相关jar 包；
+        prefix 和suffix：查找视图页面的前缀和后缀，最终视图的址为：
+        前缀+逻辑视图名+后缀，逻辑视图名需要在controller中返回ModelAndView指定，比如逻辑视图名为hello，
+        则最终返回的jsp视图地址 “pages/jsp/helloSb.jsp”
+        -->
+        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+            <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+            <property name="prefix" value="/pages/jsp/"/>
+            <property name="suffix" value=".jsp"/>
+        </bean>
+
+
+
+
+        <!--5、视图view与hanlder需要自己实现-->
+
+        <!-- 2.1 BeanNameUrlHandlerMapping controller配置 -->
+        <bean name="/items1"  class="com.ycy.controller.ItemController"/>
+        <!--2.2 SimpleUrlHandlerMapping Controller配置-->
+        <bean  id="simpleController1" class="com.ycy.controller.ItemController"/>
+        <bean  id="simpleController2" class="com.ycy.controller.ItemController2"/>
+    </beans>
