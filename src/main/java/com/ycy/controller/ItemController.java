@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +20,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2015/9/17 0017.
@@ -31,6 +34,15 @@ public class ItemController {
     //注入service
     @Autowired
     private ItemsService itemsService;
+
+
+    @ModelAttribute("itemtype")
+    public Map<Object,Object> getItemtype(){
+        Map<Object,Object> map=new HashMap<Object,Object>();
+        map.put("1","商品类型1");
+        map.put("2","商品类型2");
+        return map;
+    }
 
     /**
      * 商品展示
@@ -66,7 +78,7 @@ public class ItemController {
     public ModelAndView editItems(@RequestParam(value="id", required=true,defaultValue = "") Integer id ) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         ItemsCustom itemsCustom = itemsService.getItemsById(id);
-        modelAndView.addObject("item",itemsCustom);
+        modelAndView.addObject("itemsCustom",itemsCustom);
         modelAndView.setViewName("order/editItem");
         return modelAndView;
     }
@@ -80,7 +92,7 @@ public class ItemController {
     public String editItems(Model model) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         ItemsCustom itemsCustom = itemsService.getItemsById(1);
-        model.addAttribute("item", itemsCustom);
+        model.addAttribute("itemsCustom", itemsCustom);
         return "order/editItem";
     }
 
@@ -94,7 +106,7 @@ public class ItemController {
                           javax.servlet.http.HttpServletResponse httpServletResponse) throws Exception {
         ModelAndView modelAndView = new ModelAndView();
         ItemsCustom itemsCustom = itemsService.getItemsById(1);
-        httpServletRequest.setAttribute("item", itemsCustom);
+        httpServletRequest.setAttribute("itemsCustom", itemsCustom);
         httpServletRequest.getRequestDispatcher("/pages/jsp/order/editItem.jsp").forward(httpServletRequest,httpServletResponse);
         /**
          * 使用此方法，容易输出json、xml格式的数据：
@@ -110,10 +122,12 @@ public class ItemController {
      * @return
      */
     @RequestMapping("/editItemSubmit")
-    public String editItemSubmit(Integer id, ItemsCustom itemsCustom) throws Exception {
-        //重定向  request数据无法共享，url地址栏会发生变化的 页面地址：editItemSubmit
+    public String editItemSubmit(Integer id,@ModelAttribute(value="itemsCustom") ItemsCustom itemsCustom) throws Exception {
         itemsService.updateItem(id, itemsCustom);
-        return  "redirect:queryItems";
+        //返回修改页面
+        return "order/editItem";
+        //重定向  request数据无法共享，url地址栏会发生变化的 页面地址：editItemSubmit
+        //return  "redirect:queryItems";
         //转发   request数据可以共享，url地址栏不会变化 页面地址：queryItems
         //return  "forward:queryItems";
     }
