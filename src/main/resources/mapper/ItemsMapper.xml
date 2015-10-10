@@ -12,7 +12,7 @@
     SELECT  * from items
   </select>
 
-    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.ycy.model.Items" >
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.ycy.dto.ItemsCustom" >
         update items t
         set t.name = #{name,jdbcType=VARCHAR},
         t.price = #{price,jdbcType=REAL},

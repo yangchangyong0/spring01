@@ -13,6 +13,6 @@ public interface ItemsMapper {
 
     public List<ItemsCustom> findtemsList(ItemsCustom itemsCustom);
 
-    public  void  updateByPrimaryKeyWithBLOBs(Items items);
+    public  void  updateByPrimaryKeyWithBLOBs(ItemsCustom itemsCustom);
 
 }

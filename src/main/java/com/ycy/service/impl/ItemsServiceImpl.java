@@ -1,5 +1,6 @@
 package com.ycy.service.impl;
 
+import com.ycy.Exception.CustomException;
 import com.ycy.dto.ItemsCustom;
 import com.ycy.mapper.ItemsMapper;
 import com.ycy.model.Items;
@@ -21,7 +22,9 @@ public class ItemsServiceImpl implements ItemsService {
     public ItemsCustom getItemsById(Integer id) throws  Exception{
         Items items = itemsMapper.getItemsById(id);
         //在这里随着需求的变量，需要查询商品的其它的相关信息，返回到controller
-
+        if(items==null){
+            throw new CustomException("修改商品信息不存在");
+        }
         ItemsCustom itemsCustom = new ItemsCustom();
         //将items的属性拷贝到itemsCustom
         BeanUtils.copyProperties(items, itemsCustom);
@@ -35,8 +38,6 @@ public class ItemsServiceImpl implements ItemsService {
     }
 
     public void updateItem(Integer id, ItemsCustom itemsCustom) throws Exception {
-        System.out.println(itemsCustom.toString());
-        System.out.println(itemsCustom.toString());
         itemsMapper.updateByPrimaryKeyWithBLOBs(itemsCustom);
     }
 }

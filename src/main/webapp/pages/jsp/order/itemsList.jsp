@@ -6,13 +6,25 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>查询商品列表</title>
+	<script type="text/javascript">
+		//--------------------------------------批量删除商品----------------------------------------------
+		function deleteItems(){
+			document.itemsForm.action="${pageContext.request.contextPath }/items/deleteItems";
+			document.itemsForm.submit();
+		}
+
+	</script>
 </head>
-<body> 
-<form action="${pageContext.request.contextPath }/items/queryItem.action" method="post">
+<body>
+当前用户：${username }
+<c:if test="${username!=null }">
+	<a href="${pageContext.request.contextPath }/logout">退出</a>
+</c:if>
+<form name="itemsForm" action="${pageContext.request.contextPath }/items/queryItem" method="post">
 查询条件：
 <table width="100%" border=1>
 <tr>
-<td><input type="submit" value="查询"/>
+<td><input type="submit" value="查询"/><input type="button" value="批量删除"  onclick="deleteItems()"/>
 	<select>
 		<c:forEach items="${itemtype}" var="item">
 			<option value="${item.key}">${item.value}</option>
@@ -33,12 +45,13 @@
 </tr>
 	<c:forEach items="${itemsList}" var="item">
 		<tr>
+			<td><input type="checkbox" name="delete_id" value="${item.id}"/></td>
 			<td>${item.name}</td>
 			<td>${item.price}</td>
 				<td><fmt:formatDate value="${item.createtime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 				<td>${item.detail}</td>
-
 			<td><a href="${pageContext.request.contextPath }/items/editItems?id=${item.id}">修改</a></td>
+			<td><a href="${pageContext.request.contextPath }/items/viewItems/${item.id}">查询商品信息</a></td>
 
 		</tr>
 

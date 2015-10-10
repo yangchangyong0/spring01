@@ -12,9 +12,28 @@
 		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
 		http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd ">
+   <!--========================================静态资源==============================================-->
+    <mvc:resources mapping="/js/**" location="pages/jsp/js/"></mvc:resources>
+    <!--========================================拦截器==============================================-->
+    <!--拦截器 -->
+    <mvc:interceptors>
+        <!--多个拦截器,顺序执行 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.ycy.interceptor.HandlerInterceptor01"></bean>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.ycy.interceptor.HandlerInterceptor02"></bean>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.ycy.interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
     <!--1、=========================dispatcher已经在web.xml里面配置==================================-->
     <!-- 使用spring组件扫描 -->
-    <context:component-scan base-package="com.ycy.controller"/>
+  <context:component-scan base-package="com.ycy"/>
 
     <!-- 2、3 通过annotation-driven可以替代下边的处理器映射器和适配器 -->
     <!-- 	<mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>-->
@@ -25,17 +44,48 @@
 
     <!--3、=============================处理器适配器HandlerAdapter====================================-->
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-        <!--注解适配器:加入我们的属性解析器 -->
+        <!-- 3.1 在webBindingInitializer中注入自定义属性编辑器、自定义转换器 -->
            <property name="webBindingInitializer" ref="customBinder"></property>
-       </bean>
-
-       <!--4、============================视图解析器ViewResolver======================================-->
+        <!--3.2  加入 json数据的消息转换器 MappingJacksonHttpMessageConverter依赖Jackson的包 -->
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+            </list>
+        </property>
+    </bean>
+    <!--定义统一异常处理-->
+    <bean id="CustomExceptionResolver" class="com.ycy.Exception.CustomExceptionResolver"/>
+    <!--4、============================视图解析器ViewResolver======================================-->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/pages/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
     <!--5、视图view与hanlder需要自己实现-->
+
+
+    <!-- 文件上传 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设置上传文件的最大尺寸为5MB -->
+        <property name="maxUploadSize">
+            <value>5242880</value>
+        </property>
+    </bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     <!-- ================================1自定义webBinder:属性编辑器===================================-->
